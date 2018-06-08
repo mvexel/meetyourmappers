@@ -17,3 +17,7 @@ input, button {
 	width: 100%;
 	display: none;
 }
+
+#startover {
+	display: none;
+}

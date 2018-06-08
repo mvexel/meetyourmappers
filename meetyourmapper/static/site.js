@@ -3,8 +3,8 @@ const MAX_AREA_SIZE = 2
 
 
 var relation_id
-var city_name
 var message_queue = []
+var totals
 
 function tag_with_osmid(strings, osm_id) {
 	return strings[0] + osm_id + strings[1]
@@ -25,17 +25,28 @@ function msg(txt, color) {
 	}
 }
 
-function make_table(data, elem) {
+function calculate_magic(user, first, last) {
+	let lastseen = Math.ceil((new Date() - last) / (1000 * 60 * 60 * 24)) // in days
+	let active = Math.ceil((last - first) / (1000 * 60 * 60 * 24)) // in days
+	let edits = (user.n / totals.n) + (user.w / totals.w) * 3 + (user.r / totals.r) * 5
+	console.log(lastseen)
+	// console.log(active)
+	// console.log(edits)
+	// console.log((active * edits).toFixed(2))
+	return ((active / lastseen * 10) * edits).toFixed(2)
+}
+
+function make_table(data, table_elem) {
 	for (user in data) {
 		let u = data[user]
 		let f = new Date(u.f)
 		let l = new Date(u.l)
-		elem.find("tbody:last").append(
-			'<tr><td><a href="https://osm.org/user/' +
-			user +
-			'" target="_blank">' +
-			user +
-			'</a><td>' +
+		let m =	calculate_magic(u, f, l)
+		let h = '<a href="https://osm.org/user/' + user + '" target="_blank">' + user + '</a>'
+		// fixme ugly
+		let row = '<tr><td>' + 
+			h + 
+			'<td>' +
 			u.n +
 			'<td>' +
 			u.w +
@@ -44,24 +55,32 @@ function make_table(data, elem) {
 			'<td data-order="' + f.getTime() + '">' +
 			f.toLocaleDateString() +
 			'<td data-order="' + l.getTime() + '">' +
-			l.toLocaleDateString())
+			l.toLocaleDateString() + 
+			'<td>' +
+			m
+		console.log(row)
+		table_elem.find("tbody:last").append(row)
 	}
 }
 
 function display_result(data) {
-	let table = $("#results")
-	make_table(data, table)
-	table.show(500).DataTable();
+	totals = data.totals
+	var table = $("#results")
+	make_table(data.users, table)
+	table.show().DataTable()
+	$("#startover").show();
 	msg("Done.")
 }
 
 function process_download(data) {
-	msg(to_mb(data.size) + ' MB downloaded')
-	$.ajax("/process/" + relation_id, {
+	if (data)
+		msg(to_mb(data.size) + ' MB downloaded')
+	else
+		msg("loading local data")
+	$.ajax("/process", {
 		success: display_result
 	})
 }
-
 
 function process_relation_meta(data) {
 	let rel = data.elements[0]
@@ -77,6 +96,7 @@ function process_relation_meta(data) {
 }
 
 function get_relation_meta() {
+	$("#submit").prop('disabled', true);
 	relation_id = $("#relation_id").val()
 	$.ajax(OVERPASS_API_URL, {
 		beforeSend: msg("loading"),

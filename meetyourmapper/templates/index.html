@@ -15,7 +15,11 @@
 	<p>To get started, enter the OSM id for boundary relation representing your area of interest. It must be small-ish, because the data is fetched on-demand from Overpass.</p>
 	<div id="inputform">
 		Relation ID: <input type="text" value="4760106" id="relation_id"> 
-		<input type="button" value="Go" onclick=get_relation_meta()>
+		<input type="button" value="Go" id="submit" onclick=get_relation_meta()>
+		{% if debug %}
+		<input type="button" value="Debug (test data)" onclick=process_download()>
+		{% endif %}
+	<span id="startover"><a href="/"">Start over</a></span>
 	</div>
 	<div id="messages"></div>
 	<table id="results" class="compact stripe order-column"><thead>
@@ -25,6 +29,9 @@
 		<th>Relations</th>
 		<th>First edit</th>
 		<th>Latest edit</th>
-	</thead><tbody></tbody></table>
+		<th>Magic</th>
+	</thead>
+	<tbody>
+	</tbody></table>
 </body>
 </html>
