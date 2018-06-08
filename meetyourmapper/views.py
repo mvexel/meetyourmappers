@@ -15,7 +15,7 @@ overpass_map_query = '(node(area:{});<;);out meta;'
 def index():
 	session['uid'] = str(uuid4())
 	if app.debug:
-		session['osm_file_path'] = 'testdata/testdata.xml'
+		session['osm_file_path'] = 'testdata/testdata_huge.xml'
 	return render_template('index.html', debug=app.debug)
 
 @app.route('/retrieve/<relation_id>', methods=['get'])

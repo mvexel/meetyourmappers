@@ -29,10 +29,6 @@ function calculate_magic(user, first, last) {
 	let lastseen = Math.ceil((new Date() - last) / (1000 * 60 * 60 * 24)) // in days
 	let active = Math.ceil((last - first) / (1000 * 60 * 60 * 24)) // in days
 	let edits = (user.n / totals.n) + (user.w / totals.w) * 3 + (user.r / totals.r) * 5
-	console.log(lastseen)
-	// console.log(active)
-	// console.log(edits)
-	// console.log((active * edits).toFixed(2))
 	return ((active / lastseen * 10) * edits).toFixed(2)
 }
 
@@ -58,7 +54,6 @@ function make_table(data, table_elem) {
 			l.toLocaleDateString() + 
 			'<td>' +
 			m
-		console.log(row)
 		table_elem.find("tbody:last").append(row)
 	}
 }
