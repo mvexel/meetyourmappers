@@ -2,11 +2,11 @@
 <html>
 <head>
 	<title>Meet Your Mapper</title>
-	<script type=text/javascript src="{{url_for('static', filename='jquery-3.3.1.min.js') }}"></script>
-	<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/bs4-4.0.0/dt-1.10.16/datatables.min.css"/>
-	<script type="text/javascript" src="https://cdn.datatables.net/v/bs4-4.0.0/dt-1.10.16/datatables.min.js"></script>
-	<script type=text/javascript src="{{url_for('static', filename='site.js') }}"></script>
 	<link rel="stylesheet" type="text/css" href="{{url_for('static', filename='site.css') }}">
+	<script type=text/javascript src="{{url_for('static', filename='jquery-3.3.1.min.js') }}"></script>
+	<link rel="stylesheet" type="text/css" href="{{url_for('static', filename='DataTables/datatables.min.css') }}"/>
+	<script type="text/javascript" src="{{url_for('static', filename='DataTables/datatables.min.js') }}"></script>
+	<script type=text/javascript src="{{url_for('static', filename='site.js') }}"></script>
 </head>
 <body>
 	<div id="messages">Ready</div>
@@ -14,7 +14,8 @@
 	<p>Enter the boundary relation of your city or town or county or equivalent</p>
 	<input type="text" value="4760106" id="relation_id">
 	<input type="button" value="Go" onclick=get_relation_meta()>
-	<table id="results"><thead>
+	<p>
+	<table id="results" class="compact stripe order-column"><thead>
 		<th>User</th>
 		<th>Nodes</th>
 		<th>Ways</th>
