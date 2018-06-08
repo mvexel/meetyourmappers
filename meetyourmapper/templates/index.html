@@ -11,10 +11,14 @@
 <body>
 	<div id="messages">Ready</div>
 	<h1>Meet Your Mapper</h1>
-	<p>Enter the boundary relation of your city or town or county or equivalent</p>
-	<input type="text" value="4760106" id="relation_id">
-	<input type="button" value="Go" onclick=get_relation_meta()>
-	<p>
+	<p>This page gives you a list of mappers around you with some basic mapping stats for each, so you can invite them to a mapping party or some other OSM event, or just say hello.</p>
+	<p>If you are interested in more detail about what other mappers are doing in your area, there are way better tools to do that, like OSMCha, Whodidit and Who's Around Me. 
+	<p>To get started, enter the OSM id for boundary relation representing your area of interest. It must be small-ish, because the data is fetched on-demand from Overpass.</p>
+	<div id="inputform">
+		Relation ID: <input type="text" value="4760106" id="relation_id"> 
+		<input type="button" value="Go" onclick=get_relation_meta()>
+	</div>
+	<p />
 	<table id="results" class="compact stripe order-column"><thead>
 		<th>User</th>
 		<th>Nodes</th>
