@@ -1,10 +1,10 @@
-from meetyourmapper import app
+from meetyourmappers import app
 from flask import render_template, request, jsonify, session
 from uuid import uuid4
 import requests
 import tempfile
 import os 
-from meetyourmapper import osm
+from meetyourmappers import osm
 
 OVERPASS_AREA_BASE = 3600000000
 
@@ -37,6 +37,5 @@ def process_result():
 	print(session['osm_file_path'])
 	h = osm.UserHandler()
 	h.apply_file(session['osm_file_path'])
-	if not app.debug:
-		os.remove(session['osm_file_path'])
+	os.remove(session['osm_file_path'])
 	return jsonify({'totals': h.totals, 'users': h.users})

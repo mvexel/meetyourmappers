@@ -62,7 +62,7 @@ function display_result(data) {
 	totals = data.totals
 	var table = $("#results")
 	make_table(data.users, table)
-	table.show().DataTable()
+	table.show().DataTable({"order": [[6,"desc"]]})
 	$("#startover").show();
 	msg("Done.")
 }
