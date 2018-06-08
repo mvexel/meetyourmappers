@@ -1,0 +1,19 @@
+#messages {
+	position: absolute;
+	right: 10px;
+	top: 10px;
+}
+
+#results {
+	width: 100%;
+	display: none;
+}
+
+table {
+  border-collapse: collapse;
+  border: 1px solid black;
+}
+
+table td {
+  border: 1px solid black;
+}
