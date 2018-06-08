@@ -7,9 +7,10 @@ input, button {
 }
 
 #messages {
-	position: absolute;
-	right: 10px;
-	top: 10px;
+	font-size: smaller;
+	color: #999;
+	padding-top: 10px;
+	padding-bottom: 10px;
 }
 
 #results {

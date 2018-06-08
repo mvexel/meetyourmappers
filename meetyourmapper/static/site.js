@@ -18,8 +18,8 @@ function to_mb(n) { return (n / (1024 * 1024)).toFixed(2) }
 
 function msg(txt, color) {
 	$("#messages").empty();
-	message_queue.unshift(new Date().toLocaleString() + ': ' + txt);
-	if (message_queue.length > 5) message_queue.pop()
+	message_queue.push(new Date().toLocaleString() + ': ' + txt);
+	if (message_queue.length > 5) message_queue.shift()
 	for (i = 0; i < message_queue.length; i++) {
   		$('<div />').text(message_queue[i]).appendTo('#messages');
 	}

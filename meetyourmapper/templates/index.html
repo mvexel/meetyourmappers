@@ -9,7 +9,6 @@
 	<script type=text/javascript src="{{url_for('static', filename='site.js') }}"></script>
 </head>
 <body>
-	<div id="messages">Ready</div>
 	<h1>Meet Your Mapper</h1>
 	<p>This page gives you a list of mappers around you with some basic mapping stats for each, so you can invite them to a mapping party or some other OSM event, or just say hello.</p>
 	<p>If you are interested in more detail about what other mappers are doing in your area, there are way better tools to do that, like OSMCha, Whodidit and Who's Around Me. 
@@ -18,7 +17,7 @@
 		Relation ID: <input type="text" value="4760106" id="relation_id"> 
 		<input type="button" value="Go" onclick=get_relation_meta()>
 	</div>
-	<p />
+	<div id="messages"></div>
 	<table id="results" class="compact stripe order-column"><thead>
 		<th>User</th>
 		<th>Nodes</th>
