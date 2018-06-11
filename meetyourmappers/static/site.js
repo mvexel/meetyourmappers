@@ -1,7 +1,6 @@
 const OVERPASS_API_URL = "https://overpass-api.de/api/interpreter"
 const MAX_AREA_SIZE = 2
 
-
 var relation_id
 var message_queue = []
 var totals
@@ -92,6 +91,7 @@ function process_relation_meta(data) {
 
 function get_relation_meta() {
 	$("#submit").prop('disabled', true);
+	$("#relation_id").prop('disabled', true);
 	relation_id = $("#relation_id").val()
 	$.ajax(OVERPASS_API_URL, {
 		beforeSend: msg("loading"),
