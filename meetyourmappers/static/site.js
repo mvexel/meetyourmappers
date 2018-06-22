@@ -25,10 +25,20 @@ function msg(txt, color) {
 }
 
 function calculate_magic(user, first, last) {
+	let magic = ""
+	let firstseen = Math.ceil((new Date() - first) / (1000 * 60 * 60 * 24)) // in days
 	let lastseen = Math.ceil((new Date() - last) / (1000 * 60 * 60 * 24)) // in days
-	let active = Math.ceil((last - first) / (1000 * 60 * 60 * 24)) // in days
-	let edits = (user.n / totals.n) + (user.w / totals.w) * 3 + (user.r / totals.r) * 5
-	return ((active / lastseen * 10) * edits).toFixed(2)
+	let edits = user.n + user.w + user.r
+	let edits_proportion  = (user.n / totals.n) * user.n + (user.w / totals.w) * user.w + (user.r / totals.r) * user.r
+	console.log(firstseen, lastseen, edits, edits_proportion)
+	if (lastseen > 365) 
+		if (lastseen > 3 * 365) magic = "forgotten"
+		else magic = "retired"
+	if (edits_proportion > 1) magic += " beast"
+	else if (edits < 50 && lastseen - firstseen < 90 && magic != "new") magic += " mayfly"
+	else magic += " salt of the earth"
+	if (firstseen < 90) magic = "new"
+	return magic.trim()
 }
 
 function make_table(data, table_elem) {
@@ -36,6 +46,7 @@ function make_table(data, table_elem) {
 		let u = data[user]
 		let f = new Date(u.f)
 		let l = new Date(u.l)
+		console.log(user)
 		let m =	calculate_magic(u, f, l)
 		let h = '<a href="https://osm.org/user/' + user + '" target="_blank">' + user + '</a>'
 		// fixme ugly
@@ -59,9 +70,12 @@ function make_table(data, table_elem) {
 
 function display_result(data) {
 	totals = data.totals
+	totals["days"] = Math.ceil((new Date(totals.l) - new Date(totals.f)) / (1000 * 60 * 60 * 24)) // in days
 	var table = $("#results")
 	make_table(data.users, table)
-	table.show().DataTable({"order": [[6,"desc"]]})
+	table.show().DataTable({
+		"order": [[6,"desc"]],
+	})
 	$("#startover").show();
 	msg("Done.")
 }

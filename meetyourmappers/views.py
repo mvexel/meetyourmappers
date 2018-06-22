@@ -15,7 +15,7 @@ overpass_map_query = '(node(area:{});<;);out meta;'
 def index():
 	session['uid'] = str(uuid4())
 	if app.debug:
-		session['osm_file_path'] = 'testdata/testdata_huge.xml'
+		session['osm_file_path'] = 'testdata/Buncombe.xml'
 	return render_template('index.html', debug=app.debug)
 
 @app.route('/retrieve/<relation_id>', methods=['get'])
@@ -37,5 +37,6 @@ def process_result():
 	print(session['osm_file_path'])
 	h = osm.UserHandler()
 	h.apply_file(session['osm_file_path'])
-	os.remove(session['osm_file_path'])
+	if not app.debug:
+		os.remove(session['osm_file_path'])
 	return jsonify({'totals': h.totals, 'users': h.users})
