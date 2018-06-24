@@ -10,16 +10,12 @@
 	<p>This page gives you a list of mappers around you with some basic mapping stats for each, so you can invite them to a mapping party or some other OSM event, or just say hello.</p>
 	<p>If you are interested in more detail about what other mappers are doing in your area, there are way better tools to do that, like OSMCha, Whodidit and Who's Around Me. 
 	<p>To get started, enter the OSM id for boundary relation representing your area of interest. It must be small-ish, because the data is fetched on-demand from Overpass.</p>
-	<p>Relation ID: <input type="text" value="198999" id="relation_id"></p>
-	<p>
+	<form>Relation ID: <input type="text" value="198999" id="relation_id">
 		<input type="button" value="Go" id="submit" onclick=get_relation_meta()>
-	</p>
 		{% if debug %}
-		<p>
-			<input type="button" value="Debug (test data)" onclick=process_download()>
-		</p>
+		<input type="button" value="Debug (test data)" onclick=process_download()>
 		{% endif %}
-	<span id="startover"><a href="/"">Start over</a></span>
+		<span id="startover"><a href="/"">Start over</a></span>
 	</form>
 	<div id="messages"></div>
 	<table id="results" class="compact stripe order-column"><thead>

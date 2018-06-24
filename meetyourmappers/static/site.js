@@ -34,10 +34,11 @@ function calculate_magic(user, first, last) {
 	if (lastseen > 365) 
 		if (lastseen > 3 * 365) magic = "forgotten"
 		else magic = "retired"
-	if (edits_proportion > 1) magic += " beast"
-	else if (edits < 50 && lastseen - firstseen < 90 && magic != "new") magic += " mayfly"
-	else magic += " salt of the earth"
+	if (edits_proportion > 1) magic += " power"
+	else if (edits < 50 && lastseen - firstseen < 90) magic += " mayfly"
+	else magic += " "
 	if (firstseen < 90) magic = "new"
+	magic += " mapper"
 	return magic.trim()
 }
 
