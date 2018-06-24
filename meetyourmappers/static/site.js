@@ -15,12 +15,23 @@ function area(bounds) {
 
 function to_mb(n) { return (n / (1024 * 1024)).toFixed(2) }
 
-function msg(txt, color) {
-	$("#messages").empty();
-	message_queue.push(new Date().toLocaleString() + ': ' + txt);
+function msg(txt, is_error=false) {
+	$("#messages").empty()
+	message_queue.push(
+		{
+			"message": new Date().toLocaleString() + ': ' + txt,
+			"is_error": is_error
+		})
 	if (message_queue.length > 5) message_queue.shift()
 	for (i = 0; i < message_queue.length; i++) {
-  		$('<div />').text(message_queue[i]).appendTo('#messages');
+		let elem = $('<div />').text(message_queue[i].message)
+		if (message_queue[i].is_error) {
+			elem.css('color', 'red');
+			elem.appendTo('#messages')
+			$("#startover").show()
+			throw "uh oh"
+		}
+  		elem.appendTo('#messages')
 	}
 }
 
@@ -30,7 +41,7 @@ function calculate_magic(user, first, last) {
 	let lastseen = Math.ceil((new Date() - last) / (1000 * 60 * 60 * 24)) // in days
 	let edits = user.n + user.w + user.r
 	let edits_proportion  = (user.n / totals.n) * user.n + (user.w / totals.w) * user.w + (user.r / totals.r) * user.r
-	console.log(firstseen, lastseen, edits, edits_proportion)
+	// console.log(firstseen, lastseen, edits, edits_proportion)
 	if (lastseen > 365) 
 		if (lastseen > 3 * 365) magic = "forgotten"
 		else magic = "retired"
@@ -47,7 +58,7 @@ function make_table(data, table_elem) {
 		let u = data[user]
 		let f = new Date(u.f)
 		let l = new Date(u.l)
-		console.log(user)
+		// console.log(user)
 		let m =	calculate_magic(u, f, l)
 		let h = '<a href="https://osm.org/user/' + user + '" target="_blank">' + user + '</a>'
 		// fixme ugly
@@ -77,7 +88,7 @@ function display_result(data) {
 	table.show().DataTable({
 		"order": [[6,"desc"]],
 	})
-	$("#startover").show();
+	$("#startover").show()
 	msg("Done.")
 }
 
@@ -93,20 +104,28 @@ function process_download(data) {
 
 function process_relation_meta(data) {
 	let rel = data.elements[0]
-	let bounds = rel.bounds
-	msg(data.elements[0].tags["name"])
-	if (area(bounds) > MAX_AREA_SIZE)
-		msg("area is too big")
-	else
-		msg("getting OSM data")
-		$.ajax("/retrieve/" + relation_id, {
-			success: process_download
-		})
+	if (!rel)
+		msg("no relation found with that ID", is_error=true)
+	else if (!("admin_level" in rel.tags))
+		msg("this is not a boundary relation", is_error=true)
+	else if (parseInt(rel.tags.admin_level) < 6)
+		msg("This area is probably too big: admin_level=" + rel.tags.admin_level, is_error=true)
+	else {
+		let bounds = rel.bounds
+		msg(data.elements[0].tags["name"])
+		if (area(bounds) > MAX_AREA_SIZE)
+			msg("area is too big")
+		else
+			msg("getting OSM data")
+			$.ajax("/retrieve/" + relation_id, {
+				success: process_download
+			})
+	}
 }
 
 function get_relation_meta() {
-	$("#submit").prop('disabled', true);
-	$("#relation_id").prop('disabled', true);
+	$("#submit").prop('disabled', true)
+	$("#relation_id").prop('disabled', true)
 	relation_id = $("#relation_id").val()
 	$.ajax(OVERPASS_API_URL, {
 		beforeSend: msg("loading"),
