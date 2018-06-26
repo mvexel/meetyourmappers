@@ -3,3 +3,4 @@ venv/
 **/*.pyc
 testdata/
 meetyourmappers.egg-info
+data/
