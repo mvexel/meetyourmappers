@@ -5,6 +5,7 @@ import requests
 import tempfile
 import os 
 from meetyourmappers import osm
+from uuid import uuid4
 
 OVERPASS_AREA_BASE = 3600000000
 
@@ -34,9 +35,16 @@ def get_area(relation_id):
 
 @app.route('/process', methods=['get'])
 def process_result():
+	saved_file_path = ""
+	save_for_download = request.args.get('download') == '1'
+	print(save_for_download)
 	print(session['osm_file_path'])
 	h = osm.UserHandler()
 	h.apply_file(session['osm_file_path'])
-	if not app.debug:
+	if save_for_download:
+		print("saving file")
+		saved_file_path = os.path.join('data', str(uuid4()) + '.osm.xml')
+		os.rename(session['osm_file_path'], saved_file_path)
+	elif app.debug:
 		os.remove(session['osm_file_path'])
-	return jsonify({'totals': h.totals, 'users': h.users})
+	return jsonify({'totals': h.totals, 'users': h.users, 'file': saved_file_path})

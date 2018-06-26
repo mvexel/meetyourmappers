@@ -88,6 +88,8 @@ function display_result(data) {
 	table.show().DataTable({
 		"order": [[6,"desc"]],
 	})
+	console.log(data.file)
+	$("#download").attr("href", data.file).show()
 	$("#startover").show()
 	msg("Done.")
 }
@@ -97,7 +99,7 @@ function process_download(data) {
 		msg(to_mb(data.size) + ' MB downloaded')
 	else
 		msg("loading local data")
-	$.ajax("/process", {
+	$.ajax("/process?download=" + ($("#save_osmdata").prop("checked") ? 1 : 0), {
 		success: display_result
 	})
 }
@@ -126,6 +128,7 @@ function process_relation_meta(data) {
 function get_relation_meta() {
 	$("#submit").prop('disabled', true)
 	$("#relation_id").prop('disabled', true)
+	$("#save_osmdata").prop('disabled', true)
 	relation_id = $("#relation_id").val()
 	$.ajax(OVERPASS_API_URL, {
 		beforeSend: msg("loading"),
