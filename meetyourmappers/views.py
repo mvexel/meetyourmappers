@@ -10,7 +10,7 @@ from uuid import uuid4
 OVERPASS_AREA_BASE = 3600000000
 
 overpass_api_url = 'https://overpass-api.de/api/interpreter'
-overpass_map_query = '(node(area:{});<;);out meta;'
+overpass_map_query = '(node(area:{});<;);(._;>;);out meta;'
 data_dir = '/var/www/data'  # filesystem path to store XML files that folks want to download, 
 data_alias = '/download' # web server alias to the above file system path
 
