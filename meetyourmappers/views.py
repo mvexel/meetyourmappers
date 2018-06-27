@@ -11,7 +11,7 @@ OVERPASS_AREA_BASE = 3600000000
 
 overpass_api_url = 'https://overpass-api.de/api/interpreter'
 overpass_map_query = '(node(area:{});<;);out meta;'
-data_dir = '/var/www/meetyourmappers/data'  # filesystem path to store XML files that folks want to download, 
+data_dir = '/var/www/data'  # filesystem path to store XML files that folks want to download, 
 data_alias = '/download' # web server alias to the above file system path
 
 @app.route('/', methods=['get'])

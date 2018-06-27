@@ -6,7 +6,7 @@ WSGIPythonPath /var/www/meetyourmappers/venv/lib/python3.5/site-packages
 
         # WSGIDaemonProcess meetyourmappers threads=4
         WSGIScriptAlias / /var/www/meetyourmappers/meetyourmappers.wsgi
-        Alias /download/ /var/www/meetyourmappers/data/
+        Alias /download/ /var/www/data/
 
         <Directory /var/www/meetyourmappers>
                 # WSGIProcessGroup meetyourmappers
@@ -15,7 +15,7 @@ WSGIPythonPath /var/www/meetyourmappers/venv/lib/python3.5/site-packages
         </Directory>
 
 
-        <Directory /var/www/meetyourmappers/data>
+        <Directory /var/www/data>
                 Options FollowSymLinks
                 AllowOverride None
                 Require all granted
