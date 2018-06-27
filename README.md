@@ -21,7 +21,24 @@ A boundary relation ID is currently the only input method, so if your area of in
 
 Next, MYM will retrieve the OSM data for your area from Overpass and analyze it. This may take up to a minute or so, depending on the amount of data.
 
-When it's done, You see a table with users. By default they are sorted by magic, which is a best effort to show you the most active users first. You can re-sort it
+When it's done, You see a table with users. By default they are sorted by magic, which is an attempt to group users into classes. 
+
+## Installation
+
+
+### Development
+
+* Clone the repository
+* Install dependencies (Flask, osmium, requests) in a virtual environment
+* If you want to test data downloads, set `data_dir` and `data_alias` to `data` and create a directory `data` in the application directory.
+* `export FLASK_APP=meetyourmappers && export FLASK_DEBUG=true && flask run`
+
+### Production
+
+* Clone the repository
+* Create a data directory, `chown` to www-data
+* Configure Apache (see example)
+* Set up a `cron` job to empty the data directory, something like `0 * * * * find /var/www/data/ -type f -mtime +1 -delete`
 
 ## Development
 
