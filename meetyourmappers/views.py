@@ -37,12 +37,9 @@ def get_area(relation_id):
 def process_result():
 	saved_file_path = ""
 	save_for_download = request.args.get('download') == '1'
-	print(save_for_download)
-	print(session['osm_file_path'])
 	h = osm.UserHandler()
 	h.apply_file(session['osm_file_path'])
 	if save_for_download:
-		print("saving file")
 		saved_file_path = os.path.join('data', str(uuid4()) + '.osm.xml')
 		os.rename(session['osm_file_path'], saved_file_path)
 	elif app.debug:

@@ -16,13 +16,13 @@
 	<p>
 		Relation ID: <input type="text" value="8374450" id="relation_id">
 	<p>
-		<input type="checkbox" id="save_osmdata"> check if you want to download the raw OSM data as well
+		<input type="checkbox" id="save_osmdata"> check if you want to download the raw OSM data as well <a id="download" href="/"">Download OSM data</a>
+
 	<p>
 		<input type="button" value="Go" id="submit" onclick=get_relation_meta()>
 		{% if debug %}
 		<input type="button" value="Debug (test data)" onclick=process_download()>
 		{% endif %}
-		<a id="download" href="/"">Download OSM data</a>
 		<a id="startover" href="/"">Start over</a>
 	</p>
 	</form>
