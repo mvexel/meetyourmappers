@@ -4,24 +4,18 @@ WSGIPythonPath /var/www/meetyourmappers/venv/lib/python3.5/site-packages
 <VirtualHost *:80>
         ServerName mym.example.com
 
-        # WSGIDaemonProcess meetyourmappers threads=4
-        WSGIScriptAlias / /var/www/meetyourmappers/meetyourmappers.wsgi
+        AddType application/octet-stream .xml
+
         Alias /download/ /var/www/data/
+        WSGIScriptAlias / /var/www/meetyourmappers/meetyourmappers.wsgi
 
         <Directory /var/www/meetyourmappers>
-                # WSGIProcessGroup meetyourmappers
-                # WSGIApplicationGroup %{GLOBAL}
                 Require all granted
         </Directory>
 
-
         <Directory /var/www/data>
-                Options FollowSymLinks
+                Options None
                 AllowOverride None
                 Require all granted
         </Directory>
-
-RewriteEngine on
-RewriteCond %{SERVER_NAME} =mym.example.com
-RewriteRule ^ https://%{SERVER_NAME}%{REQUEST_URI} [END,NE,R=permanent]
 </VirtualHost>
