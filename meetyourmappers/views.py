@@ -42,8 +42,12 @@ def process_result():
 	h = osm.UserHandler()
 	h.apply_file(session['osm_file_path'])
 	if save_for_download:
-		saved_file_path = os.path.join(data_alias, (str(uuid4()) + '.osm.xml'))
+		download_filename = str(uuid4()) + '.osm.xml'
+		saved_file_path = os.path.join(data_dir, download_filename)
 		os.rename(session['osm_file_path'], saved_file_path)
 	elif app.debug:
 		os.remove(session['osm_file_path'])
-	return jsonify({'totals': h.totals, 'users': h.users, 'file': saved_file_path})
+	return jsonify({
+		'totals': h.totals,
+		'users': h.users,
+		'file': os.path.join(data_alias, download_filename)})
