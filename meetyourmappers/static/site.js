@@ -126,14 +126,17 @@ function process_relation_meta(data) {
 }
 
 function get_relation_meta() {
-	$("#submit").prop('disabled', true)
-	$("#relation_id").prop('disabled', true)
-	$("#save_osmdata").prop('disabled', true)
-	relation_id = $("#relation_id").val()
-	$.ajax(OVERPASS_API_URL, {
-		beforeSend: msg("loading"),
-		method: "POST",
-		data: tag_with_osmid`[out:json];relation(${ relation_id });out bb meta;`,
-		success: process_relation_meta,
-	})
+	relation_id = parseInt($("#relation_id").val())
+	if (isNaN(relation_id) || relation_id < 1)
+		msg("Please enter a valid relation ID", is_error=true)
+	else
+		$("#submit").prop('disabled', true)
+		$("#relation_id").prop('disabled', true)
+		$("#save_osmdata").prop('disabled', true)
+		$.ajax(OVERPASS_API_URL, {
+			beforeSend: msg("loading"),
+			method: "POST",
+			data: tag_with_osmid`[out:json];relation(${ relation_id });out bb meta;`,
+			success: process_relation_meta,
+		})
 }
