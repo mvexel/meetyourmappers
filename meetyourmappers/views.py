@@ -11,6 +11,7 @@ OVERPASS_AREA_BASE = 3600000000
 
 overpass_api_url = 'https://overpass-api.de/api/interpreter'
 overpass_map_query = '(node(area:{});<;);out meta;'
+data_dir = '/var/www/meetyourmappers/data'
 
 @app.route('/', methods=['get'])
 def index():
@@ -40,7 +41,7 @@ def process_result():
 	h = osm.UserHandler()
 	h.apply_file(session['osm_file_path'])
 	if save_for_download:
-		saved_file_path = os.path.join('data', str(uuid4()) + '.osm.xml')
+		saved_file_path = os.path.join(data_dir, (str(uuid4()) + '.osm.xml'))
 		os.rename(session['osm_file_path'], saved_file_path)
 	elif app.debug:
 		os.remove(session['osm_file_path'])
