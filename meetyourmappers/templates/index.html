@@ -6,15 +6,14 @@
 	<link rel="stylesheet" type="text/css" href="{{url_for('static', filename='DataTables/datatables.min.css') }}"/>
 </head>
 <body>
-	<h1>Meet Your Mapper</h1>
-	<p>Meet Your Mapper (MYM) tells you who has mapped in your area, when, and how much. Use it for fun, curiosity, or to help you make a list of people to  invite to a mapping party or some other OSM event.</p>
-	<p>If you are interested in more detail about what other mappers are doing in your area, there are way better tools to do that, like OSMCha, Whodidit and Who's Around Me. 
-	<h2>Mapper Types</h2>
-	<p>MYM groups mappers into types based on their mapping history. There are <em>normal mappers</em>, <em>power mappers</em>, and <em>mayfly mappers</em>, and <em>new mappers</em>. If someone has not mapped recently, they are either <em>retired</em> or <em>forgotten</em>.</p>
-	<hr />
-	<p>To get started, enter the OSM id for boundary relation representing your area of interest. It must be small-ish, because the data is fetched on-demand from Overpass. If you don't know the relation ID, you can look it up by searching for your area on <a target="new" href="https://osm.org">the OSM web site</a>.</p>
+	<h2>Meet Your Mapper</h2>
+	Meet Your Mapper (MYM) tells you who has mapped in your area, when, and how much. Use it for fun, curiosity, or to help you make a list of people to  invite to a mapping party or some other OSM event.
+	<p>If you are interested in more detail about what other mappers are doing in your area, there are way better tools to do that, like OSMCha, Whodidit and Who's Around Me.
+	<p><strong>About Mapper Types</strong>: MYM groups mappers into types based on their mapping history. There are <em>normal mappers</em>, <em>power mappers</em>, and <em>mayfly mappers</em>, and <em>new mappers</em>. If someone has not mapped recently, they are either <em>retired</em> or <em>forgotten</em>.
+	<hr>
+	<p>Enter the OSM id for the boundary relation representing your area of interest. It must be small-ish (admin_level 6 or higher, bounding box not more than 2 degrees squared), because the data is fetched on-demand from Overpass. If you don't know the relation ID, you can look it up by searching for your area on <a target="new" href="https://osm.org">the OSM web site</a>.</p>
 	<p>
-		Relation ID: <input type="text" value="8374450" id="relation_id">
+		Relation ID: <input type="text" placeholder="8374450" id="relation_id">
 	<p>
 		<input type="checkbox" id="save_osmdata"> check if you want to download the raw OSM data as well <a id="download" href="/"">Download OSM data</a>
 
