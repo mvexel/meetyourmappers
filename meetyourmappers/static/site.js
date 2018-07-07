@@ -98,7 +98,9 @@ function display_result(data) {
 	totals["days"] = Math.ceil((new Date(totals.l) - new Date(totals.f)) / (1000 * 60 * 60 * 24)) // in days
 	make_table(data.users)
 	t.show().DataTable({
-		"order": [[5,"desc"]],
+		dom: 'Bfrtip',
+		order: [[5,"desc"]],
+		buttons: ['copyHtml5','csvHtml5']
 	})
 	// console.log(data.file)
 	if (download_flag) $("#download").attr("href", data.file).show()
