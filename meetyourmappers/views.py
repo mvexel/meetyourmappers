@@ -21,6 +21,11 @@ def index():
 		session['osm_file_path'] = 'testdata/Buncombe.xml'
 	return render_template('index.html', debug=app.debug)
 
+@app.route('/about', methods=['get'])
+def about():
+	return render_template('about.html', debug=app.debug)
+
+
 @app.route('/retrieve/<relation_id>', methods=['get'])
 def get_area(relation_id):	
 	session['osm_file_path'] = os.path.join(tempfile.gettempdir(), session['uid'] + '.xml')
@@ -38,6 +43,7 @@ def get_area(relation_id):
 @app.route('/process', methods=['get'])
 def process_result():
 	saved_file_path = ""
+	download_filename = ""
 	save_for_download = request.args.get('download') == '1'
 	h = osm.UserHandler()
 	h.apply_file(session['osm_file_path'])

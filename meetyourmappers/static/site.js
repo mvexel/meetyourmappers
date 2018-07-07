@@ -4,6 +4,8 @@ const MAX_AREA_SIZE = 2
 var relation_id
 var message_queue = []
 var totals
+var t = $("#results")
+var download_flag = false
 
 function tag_with_osmid(strings, osm_id) {
 	return strings[0] + osm_id + strings[1]
@@ -26,13 +28,24 @@ function msg(txt, is_error=false) {
 	for (i = 0; i < message_queue.length; i++) {
 		let elem = $('<div />').text(message_queue[i].message)
 		if (message_queue[i].is_error) {
-			elem.css('color', 'red');
+			elem.css('color', 'red')
 			elem.appendTo('#messages')
 			$("#startover").show()
 			throw "uh oh"
 		}
   		elem.appendTo('#messages')
 	}
+}
+
+function init() {
+	$("#startover").hide()
+	$("#submit").prop('disabled', false)
+	$("#relation_id").prop('disabled', false)
+	$("#save_osmdata").prop('disabled', false)
+	t.DataTable().clear().destroy()
+	t.hide()
+	message_queue = []
+	msg("Ready")
 }
 
 function calculate_magic(user, first, last) {
@@ -53,7 +66,7 @@ function calculate_magic(user, first, last) {
 	return magic.trim()
 }
 
-function make_table(data, table_elem) {
+function make_table(data) {
 	for (user in data) {
 		let u = data[user]
 		let f = new Date(u.f)
@@ -76,36 +89,37 @@ function make_table(data, table_elem) {
 			l.toLocaleDateString() + 
 			'<td>' +
 			m
-		table_elem.find("tbody:last").append(row)
+		t.find("tbody:last").append(row)
 	}
 }
 
 function display_result(data) {
 	totals = data.totals
 	totals["days"] = Math.ceil((new Date(totals.l) - new Date(totals.f)) / (1000 * 60 * 60 * 24)) // in days
-	var table = $("#results")
-	make_table(data.users, table)
-	table.show().DataTable({
-		"order": [[6,"desc"]],
+	make_table(data.users)
+	t.show().DataTable({
+		"order": [[5,"desc"]],
 	})
-	console.log(data.file)
-	$("#download").attr("href", data.file).show()
+	// console.log(data.file)
+	if (download_flag) $("#download").attr("href", data.file).show()
 	$("#startover").show()
 	msg("Done.")
 }
 
 function process_download(data) {
 	if (data)
-		msg(to_mb(data.size) + ' MB downloaded')
+		msg(to_mb(data.size) + ' MB downloaded, processing...')
 	else
 		msg("loading local data")
 	$.ajax("/process?download=" + ($("#save_osmdata").prop("checked") ? 1 : 0), {
-		success: display_result
+		success: display_result,
+		error: function(jqXHR, textStatus, errorThrown) { msg("data processing failed", is_error=true) }
 	})
 }
 
 function process_relation_meta(data) {
 	let rel = data.elements[0]
+	download_flag = $("#save_osmdata").prop("checked")
 	if (!rel)
 		msg("no relation found with that ID", is_error=true)
 	else if (!("admin_level" in rel.tags))
@@ -120,7 +134,8 @@ function process_relation_meta(data) {
 		else
 			msg("getting OSM data")
 			$.ajax("/retrieve/" + relation_id, {
-				success: process_download
+				success: process_download,
+				error: function(jqXHR, textStatus, errorThrown) { msg("data retrieval failed", is_error=true) }
 			})
 	}
 }
@@ -138,5 +153,6 @@ function get_relation_meta() {
 			method: "POST",
 			data: tag_with_osmid`[out:json];relation(${ relation_id });out bb meta;`,
 			success: process_relation_meta,
+			error: function() { msg("metadata retrieval failed", is_error=true) }
 		})
 }

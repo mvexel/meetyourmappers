@@ -1,6 +1,5 @@
 body {
 	font-family: sans-serif;
-	margin: 10px;
 }
 
 input, button {
@@ -25,4 +24,25 @@ input, button {
 
 #download {
 	display: none;
+}
+
+#about {
+}
+
+.title {
+	padding: 10px;
+/*	background-color: #eee;*/
+}
+
+.userinput {
+	padding: 10px;
+	background-color: #ffc;
+	font-size: 16pt;
+	border-left: 5px solid #f60;
+}
+
+.explain {
+	font-size: 11pt;
+	padding:10px;
+	border-left: 5px solid #eee; 
 }
