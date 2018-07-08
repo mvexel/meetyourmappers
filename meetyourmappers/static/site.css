@@ -41,6 +41,8 @@ input, button {
 	float: left;
 	display: inline;
 	padding: 20px;
+	width: 175px;
+	font-size: 9pt;
 }
 
 .userinput {
