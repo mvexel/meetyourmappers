@@ -26,9 +26,21 @@ input, button {
 	display: none;
 }
 
-.title {
-	padding: 10px;
-/*	background-color: #eee;*/
+#top {
+	overflow: hidden;
+}
+
+#title {
+	position: relative;
+	float: left;
+	display: inline;
+}
+
+#headerimage {
+	position: relative;
+	float: left;
+	display: inline;
+	padding: 20px;
 }
 
 .userinput {
