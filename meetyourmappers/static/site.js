@@ -124,8 +124,8 @@ function process_relation_meta(data) {
 	download_flag = $("#save_osmdata").prop("checked")
 	if (!rel)
 		msg("no relation found with that ID", is_error=true)
-	else if (!("admin_level" in rel.tags))
-		msg("this is not a boundary relation", is_error=true)
+	else if (!("admin_level" in rel.tags || rel.tags.boundary == "local_authority"))
+		msg("this does not appear to be an administrative boundary relation", is_error=true)
 	else if (parseInt(rel.tags.admin_level) < 6)
 		msg("This area is probably too big: admin_level=" + rel.tags.admin_level, is_error=true)
 	else {
