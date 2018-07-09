@@ -31,7 +31,7 @@ When it's done, You see a table with users. By default they are sorted by magic,
 * Clone the repository
 * Install dependencies (Flask, osmium, requests) in a virtual environment
 * If you want to test data downloads, set `data_dir` and `data_alias` to `data` and create a directory `data` in the application directory.
-* `export FLASK_APP=meetyourmappers && export FLASK_DEBUG=true && flask run`
+* `run.sh`
 
 ### Production
 
