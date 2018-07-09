@@ -6,6 +6,7 @@ import tempfile
 import os 
 from meetyourmappers import osm
 from uuid import uuid4
+import logging
 
 OVERPASS_AREA_BASE = 3600000000
 
@@ -13,6 +14,16 @@ overpass_api_url = 'https://overpass-api.de/api/interpreter'
 overpass_map_query = '(node(area:{});<;);(._;>;);out meta;'
 data_dir = '/var/www/data'  # filesystem path to store XML files that folks want to download, 
 data_alias = '/download' # web server alias to the above file system path
+log_file = '/var/log/meetyourmappers/requests.log'
+
+logging.basicConfig(
+	filename=log_file,
+	filemode='a',
+	format='%(asctime)s,%(msecs)d %(name)s %(levelname)s %(message)s',
+	datefmt='%H:%M:%S',
+	level=logging.DEBUG)
+
+logger = logging.getLogger('urbanGUI')
 
 @app.route('/', methods=['get'])
 def index():
@@ -36,6 +47,7 @@ def get_area(relation_id):
 	with open(session['osm_file_path'], 'wb') as fh:
 		for block in resp.iter_content(1024):
 			fh.write(block)
+	logging.info("\t".join([relation_id, str(len(resp.content))]))
 	return jsonify({
 		'file': session['osm_file_path'],
 		'size': len(resp.content)})
