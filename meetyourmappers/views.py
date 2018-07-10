@@ -9,16 +9,8 @@ import logging
 
 OVERPASS_AREA_BASE = 3600000000
 
-overpass_api_url = 'https://overpass-api.de/api/interpreter'
-overpass_map_query = '(node(area:{});<;);(._;>;);out meta;'
-# filesystem path to store XML files that folks want to download
-data_dir = '/var/www/data'
-# web server alias to the above file system path
-data_alias = '/download'
-log_file = '/var/log/meetyourmappers/requests.log'
-
 logging.basicConfig(
-    filename=log_file,
+    filename=app.config['LOG_FILE'],
     filemode='a',
     format='%(asctime)s,%(msecs)d %(name)s %(levelname)s %(message)s',
     datefmt='%H:%M:%S',
@@ -30,9 +22,12 @@ logger = logging.getLogger()
 @app.route('/', methods=['get'])
 def index():
     session['uid'] = str(uuid4())
+    test_data = app.config['TEST_DATA']
     if app.debug:
-        session['osm_file_path'] = 'testdata/Buncombe.xml'
-    return render_template('index.html', debug=app.debug)
+        session['osm_file_path'] = test_data
+    return render_template(
+        'index.html', debug=app.debug,
+        has_testdata=os.path.exists(os.path.join(app.static_folder, test_data)))
 
 
 @app.route('/about', methods=['get'])
@@ -45,9 +40,9 @@ def get_area(relation_id):
     session['osm_file_path'] = os.path.join(
         tempfile.gettempdir(),
         session['uid'] + '.xml')
-    q = overpass_map_query.format(int(relation_id) + OVERPASS_AREA_BASE)
+    q = app.config['OVERPASS_MAP_QUERY'].format(int(relation_id) + OVERPASS_AREA_BASE)
     resp = requests.post(
-        overpass_api_url,
+        app.config['OVERPASS_API_URL'],
         data=q)
     with open(session['osm_file_path'], 'wb') as fh:
         for block in resp.iter_content(1024):
@@ -67,12 +62,12 @@ def process_result():
     h.apply_file(session['osm_file_path'])
     if save_for_download:
         download_filename = str(uuid4()) + '.osm.xml'
-        saved_file_path = os.path.join(data_dir, download_filename)
+        saved_file_path = os.path.join(app.config['DATA_DIR'], download_filename)
         os.rename(session['osm_file_path'], saved_file_path)
-    else:
+    elif not app.debug:
         logging.info("Removing temp file: {}".format(session['osm_file_path']))
         os.remove(session['osm_file_path'])
     return jsonify({
         'totals': h.totals,
         'users': h.users,
-        'file': os.path.join(data_alias, download_filename)})
+        'file': os.path.join(app.config['DATA_ALIAS'], download_filename)})

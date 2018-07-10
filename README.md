@@ -33,6 +33,8 @@ The file can be any format osmium supports.
 
 ## Installation
 
+The configuration for the backend should be written to `config_local.py` file in the `meetyourmappers` directory.
+See possible keys in the `config.py` file.
 
 ### Development
 
