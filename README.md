@@ -23,6 +23,14 @@ Next, MYM will retrieve the OSM data for your area from Overpass and analyze it.
 
 When it's done, You see a table with users. By default they are sorted by magic, which is an attempt to group users into classes. 
 
+### Standalone usage
+If you have OSM files on your local machine and you want to run the tool on those, follow these steps:
+
+* Create the virtual environment and install dependencies (see below under Installation > Development)
+* run `python3 meetyourmappers/osm.py YOUR_OSM_DATA_FILE > out.json`
+
+The file can be any format osmium supports. 
+
 ## Installation
 
 
@@ -38,7 +46,7 @@ When it's done, You see a table with users. By default they are sorted by magic,
 * Clone the repository
 * Create a data directory, `chown` to www-data
 * Configure Apache (see example)
-* Set up a `cron` job to empty the data directory, something like `0 * * * * find /var/www/data/ -type f -mtime +1 -delete`
+* Set up a `cron` job to empty the data directory periodically, something like `0 * * * * find /var/www/data/ -type f -mmin +60 -delete`
 
 ## Development
 
