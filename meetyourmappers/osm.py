@@ -67,11 +67,20 @@ class UserHandler(osmium.SimpleHandler):
 
 if __name__ == '__main__':
     import sys
+    import json
+    from datetime import date, datetime
+
+    def dateserial(obj):
+        """JSON serializer for objects not serializable by default json code"""
+
+        if isinstance(obj, (datetime, date)):
+            return obj.isoformat()
+        raise TypeError ("Type %s not serializable" % type(obj))
+
     args = sys.argv
     if len(args) != 2:
         print("please supply a filename")
         sys.exit(1)
     u = UserHandler()
     u.apply_file(args[1])
-    print(u.users)
-    print(u.totals)
+    print(json.dumps(u.users, default=dateserial))
