@@ -42,12 +42,13 @@ def about():
 
 @app.route('/retrieve/<relation_id>', methods=['get'])
 def get_area(relation_id):
+    overpass_endpoint = request.args.get('server')
     session['osm_file_path'] = os.path.join(
         tempfile.gettempdir(),
         session['uid'] + '.xml')
     q = overpass_map_query.format(int(relation_id) + OVERPASS_AREA_BASE)
     resp = requests.post(
-        overpass_api_url,
+        overpass_endpoint,
         data=q)
     with open(session['osm_file_path'], 'wb') as fh:
         for block in resp.iter_content(1024):

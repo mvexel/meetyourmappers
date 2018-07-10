@@ -1,4 +1,5 @@
 const OVERPASS_API_URL = "https://overpass-api.de/api/interpreter"
+const OVERPASS_ALT_API_URL = "https://overpass.kumi.systems/api/interpreter"
 const MAX_AREA_SIZE = 2
 
 var relation_id
@@ -6,6 +7,7 @@ var message_queue = []
 var totals
 var t = $("#results")
 var download_flag = false
+var overpass_endpoint
 
 function tag_with_osmid(strings, osm_id) {
 	return strings[0] + osm_id + strings[1]
@@ -42,6 +44,7 @@ function init() {
 	$("#submit").prop('disabled', false)
 	$("#relation_id").prop('disabled', false)
 	$("#save_osmdata").prop('disabled', false)
+	$("#use_altserver").prop('disabled', false)
 	t.DataTable().clear().destroy()
 	t.hide()
 	message_queue = []
@@ -135,7 +138,7 @@ function process_relation_meta(data) {
 			msg("area is too big")
 		else
 			msg("getting OSM data")
-			$.ajax("/retrieve/" + relation_id, {
+			$.ajax("/retrieve/" + relation_id + "?server=" + overpass_endpoint, {
 				success: process_download,
 				error: function(jqXHR, textStatus, errorThrown) { msg("data retrieval failed", is_error=true) }
 			})
@@ -146,15 +149,17 @@ function get_relation_meta() {
 	relation_id = parseInt($("#relation_id").val())
 	if (isNaN(relation_id) || relation_id < 1)
 		msg("Please enter a valid relation ID", is_error=true)
-	else
-		$("#submit").prop('disabled', true)
-		$("#relation_id").prop('disabled', true)
-		$("#save_osmdata").prop('disabled', true)
-		$.ajax(OVERPASS_API_URL, {
-			beforeSend: msg("loading"),
-			method: "POST",
-			data: tag_with_osmid`[out:json];relation(${ relation_id });out bb meta;`,
-			success: process_relation_meta,
-			error: function() { msg("metadata retrieval failed", is_error=true) }
-		})
+	$("#submit").prop('disabled', true)
+	$("#relation_id").prop('disabled', true)
+	$("#save_osmdata").prop('disabled', true)
+	$("#use_altserver").prop('disabled', true)
+	overpass_endpoint = $("#use_altserver").prop('checked') ?  OVERPASS_ALT_API_URL : OVERPASS_API_URL
+	msg("using Overpass server at " + overpass_endpoint)
+	$.ajax(overpass_endpoint, {
+		beforeSend: msg("loading"),
+		method: "POST",
+		data: tag_with_osmid`[out:json];relation(${ relation_id });out bb meta;`,
+		success: process_relation_meta,
+		error: function() { msg("metadata retrieval failed", is_error=true) }
+	})
 }
