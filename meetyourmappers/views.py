@@ -70,6 +70,7 @@ def process_result():
         saved_file_path = os.path.join(data_dir, download_filename)
         os.rename(session['osm_file_path'], saved_file_path)
     elif not app.debug:
+    	logging.info("Removing temp file: ", session['osm_file_path'])
         os.remove(session['osm_file_path'])
     return jsonify({
         'totals': h.totals,
