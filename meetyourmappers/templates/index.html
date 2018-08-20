@@ -5,6 +5,13 @@
 			Which area are you interested in? <input type="text" placeholder="OSM relation ID" id="relation_id">
 		</div>
 		<div class="explain">
+			OR use the map below to draw the bounding box around the area you are interested in
+		</div>
+		<div class="userinput">
+			<div id="mapid"></div>
+			<div id="drawresult"></div>
+		</div>
+		<div class="explain">
 			Enter the OSM id for the boundary relation representing your area of interest. It must be small-ish (admin_level 6 or higher, bounding box not more than 2 degrees squared), because the data is fetched on-demand from Overpass. If you don't know the relation ID, you can look it up by searching for your area on <a target="new" href="https://osm.org">the OSM web site</a>.
 		</div>
 		<div class="userinput">

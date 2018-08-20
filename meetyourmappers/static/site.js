@@ -8,6 +8,32 @@ var totals
 var t = $("#results")
 var download_flag = false
 var overpass_endpoint
+var n, s, e, w
+
+function checkBbox(layer) {
+   var bounds = layer.getBounds()
+   var 
+       n = bounds.getNorth(),
+       s = bounds.getSouth(),
+       e = bounds.getEast(),
+       w = bounds.getWest()
+
+   return ((Math.abs(n - s) * Math.abs(e - w)) < 1) 
+}
+
+function onDraw(e) {
+    editableLayers.clearLayers()
+    var layer = e.layer
+    var drawResultElem = document.getElementById('drawresult')
+    var isValid = checkBbox(layer)
+    if (isValid) {
+        drawResultElem.innerHTML = 'Bounding Box OK'
+    } else {
+        drawResultElem.innerHTML = 'Bounding Box too big'
+    }
+    editableLayers.addLayer(layer)
+}
+
 
 function tag_with_osmid(strings, osm_id) {
 	return strings[0] + osm_id + strings[1]
@@ -48,6 +74,36 @@ function init() {
 	t.DataTable().clear().destroy()
 	t.hide()
 	message_queue = []
+	// init Leaflet map
+	var mymap = L.map('mapid').setView([51.505, -0.09], 13);
+
+	// create the tile layer with correct attribution
+	var osmUrl='https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
+	var osmAttrib='Map data © <a href="https://openstreetmap.org">OpenStreetMap</a> contributors';
+	var osm = new L.TileLayer(osmUrl, {minZoom: 4, maxZoom: 16, attribution: osmAttrib});        
+
+	// start the map in South-East England
+	mymap.setView(new L.LatLng(51.3, 0.7),9);
+	mymap.addLayer(osm);
+
+	// add editable layers
+	var editableLayers = new L.FeatureGroup();
+	mymap.addLayer(editableLayers);
+
+	// add draw control
+	var drawControl = new L.Control.Draw({
+	    draw: {
+	         polyline:false,
+	         polygon: false,
+	         circle: false,
+	         marker: false,
+	         circlemarker: false
+	     },
+	 }).addTo(mymap);
+
+	// add draw event
+	mymap.on(L.Draw.Event.CREATED, ondraw);
+
 	msg("Ready")
 }
 
@@ -138,7 +194,7 @@ function process_relation_meta(data) {
 			msg("area is too big")
 		else
 			msg("getting OSM data")
-			$.ajax("/retrieve/" + relation_id + "?server=" + overpass_endpoint, {
+			$.ajax("/get_rel/" + relation_id + "?server=" + overpass_endpoint, {
 				success: process_download,
 				error: function(jqXHR, textStatus, errorThrown) { msg("data retrieval failed", is_error=true) }
 			})
@@ -162,4 +218,25 @@ function get_relation_meta() {
 		success: process_relation_meta,
 		error: function() { msg("metadata retrieval failed", is_error=true) }
 	})
+}
+
+function parse_bbox() {
+	// when user defined area of interest using the map to draw a bounding box,
+	// we retrieve the data from here and send it on to process_download
+	msg("getting OSM data")
+	$.ajax("/get_box/?n=" + n + "&s=" + s + "&e=" + e + "&w=" + w + "&server=" + overpass_endpoint, {
+		success: process_download,
+		error: function(jqXHR, textStatus, errorThrown) { msg("data retrieval failed", is_error=true) }
+	})
+
+}
+
+function submit() {
+	if (parseInt($("#relation_id").val())) {
+		get_relation_meta()
+	} else if (n && s && e && w) {
+		parse_bbox()
+	} else {
+		msg("Please supply an OSM relation ID or draw a box on the map.", is_error=true)
+	}
 }

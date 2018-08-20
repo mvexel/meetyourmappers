@@ -45,6 +45,14 @@ input, button {
 	font-size: 9pt;
 }
 
+#mapid {
+	position: absolute:
+	left: 600px;
+	top: 200px;
+	height: 400px;
+	width: 600px;
+}
+
 .userinput {
 	padding: 10px;
 	background-color: #ffc;
