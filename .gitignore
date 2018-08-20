@@ -4,3 +4,5 @@ venv/
 testdata/
 meetyourmappers.egg-info
 data/
+config_local.py
+*.log
