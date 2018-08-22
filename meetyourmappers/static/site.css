@@ -7,7 +7,15 @@ input, button {
 }
 
 #messages {
-	font-size: smaller;
+	position: fixed;
+	top: 10px;
+	right: 10px;
+	width: 400px;
+	height: 100px;
+	border: 1px solid #aaa;
+	padding: 5px;
+	background-color: #ddd;
+	font-size: 10px;
 	color: #999;
 	padding-top: 10px;
 	padding-bottom: 10px;
@@ -46,9 +54,8 @@ input, button {
 }
 
 #mapid {
-	position: absolute:
-	left: 600px;
-	top: 200px;
+	position: relative;
+	margin-top: 10px;
 	height: 400px;
 	width: 600px;
 }

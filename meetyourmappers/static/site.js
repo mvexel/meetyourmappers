@@ -8,17 +8,17 @@ var totals
 var t = $("#results")
 var download_flag = false
 var overpass_endpoint
-var n, s, e, w
+var north, south, east, west
+var mymap
+var editableLayers
 
 function checkBbox(layer) {
    var bounds = layer.getBounds()
-   var 
-       n = bounds.getNorth(),
-       s = bounds.getSouth(),
-       e = bounds.getEast(),
-       w = bounds.getWest()
-
-   return ((Math.abs(n - s) * Math.abs(e - w)) < 1) 
+   north = bounds.getNorth(),
+   south = bounds.getSouth(),
+   east = bounds.getEast(),
+   west = bounds.getWest()
+   return (Math.abs(north - south) < 1 && Math.abs(east - west) < 1) 
 }
 
 function onDraw(e) {
@@ -27,11 +27,11 @@ function onDraw(e) {
     var drawResultElem = document.getElementById('drawresult')
     var isValid = checkBbox(layer)
     if (isValid) {
-        drawResultElem.innerHTML = 'Bounding Box OK'
+        msg('Bounding Box (' + south + ',' + west + ',' + north + ',' + east + ') OK')
+	    editableLayers.addLayer(layer)
     } else {
-        drawResultElem.innerHTML = 'Bounding Box too big'
+        msg('Bounding Box too big', true, true)
     }
-    editableLayers.addLayer(layer)
 }
 
 
@@ -45,7 +45,7 @@ function area(bounds) {
 
 function to_mb(n) { return (n / (1024 * 1024)).toFixed(2) }
 
-function msg(txt, is_error=false) {
+function msg(txt, is_error=false, no_croak=true) {
 	$("#messages").empty()
 	message_queue.push(
 		{
@@ -58,10 +58,16 @@ function msg(txt, is_error=false) {
 		if (message_queue[i].is_error) {
 			elem.css('color', 'red')
 			elem.appendTo('#messages')
-			$("#startover").show()
-			throw "uh oh"
-		}
-  		elem.appendTo('#messages')
+			if (!no_croak) {
+				$("#startover").show()
+				throw "uh oh"
+			}
+		} else if (message_queue[i].is_warning) {
+			elem.css('color', 'orange')			
+			elem.appendTo('#messages')
+		} else {
+	  		elem.appendTo('#messages')
+	  	}
 	}
 }
 
@@ -75,35 +81,38 @@ function init() {
 	t.hide()
 	message_queue = []
 	// init Leaflet map
-	var mymap = L.map('mapid').setView([51.505, -0.09], 13);
+	if (!mymap) {
+		mymap = L.map('mapid').setView([51.505, -0.09], 13);
 
-	// create the tile layer with correct attribution
-	var osmUrl='https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
-	var osmAttrib='Map data © <a href="https://openstreetmap.org">OpenStreetMap</a> contributors';
-	var osm = new L.TileLayer(osmUrl, {minZoom: 4, maxZoom: 16, attribution: osmAttrib});        
+		// create the tile layer with correct attribution
+		var osmUrl='https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
+		var osmAttrib='Map data © <a href="https://openstreetmap.org">OpenStreetMap</a> contributors';
+		var osm = new L.TileLayer(osmUrl, {minZoom: 4, maxZoom: 16, attribution: osmAttrib});        
 
-	// start the map in South-East England
-	mymap.setView(new L.LatLng(51.3, 0.7),9);
-	mymap.addLayer(osm);
+		// start the map in South-East England
+		mymap.setView(new L.LatLng(51.3, 0.7),9);
+		mymap.addLayer(osm);
 
-	// add editable layers
-	var editableLayers = new L.FeatureGroup();
-	mymap.addLayer(editableLayers);
+		// add editable layers
+		editableLayers = new L.FeatureGroup();
+		mymap.addLayer(editableLayers);
 
-	// add draw control
-	var drawControl = new L.Control.Draw({
-	    draw: {
-	         polyline:false,
-	         polygon: false,
-	         circle: false,
-	         marker: false,
-	         circlemarker: false
-	     },
-	 }).addTo(mymap);
+		// add draw control
+		var drawControl = new L.Control.Draw({
+		    draw: {
+		         polyline:false,
+		         polygon: false,
+		         circle: false,
+		         marker: false,
+		         circlemarker: false
+		     },
+		 }).addTo(mymap);
 
-	// add draw event
-	mymap.on(L.Draw.Event.CREATED, ondraw);
-
+		// add draw event
+		mymap.on(L.Draw.Event.CREATED, onDraw);
+	} else {
+		editableLayers.clearLayers()
+	}
 	msg("Ready")
 }
 
@@ -174,69 +183,72 @@ function process_download(data) {
 		msg("loading local data")
 	$.ajax("/process?download=" + ($("#save_osmdata").prop("checked") ? 1 : 0), {
 		success: display_result,
-		error: function(jqXHR, textStatus, errorThrown) { msg("data processing failed", is_error=true) }
+		error: function(jqXHR, textStatus, errorThrown) { msg("data processing failed", true) }
 	})
 }
 
-function process_relation_meta(data) {
+function retrieve_relation_data(data) {
+	// This function receives the relation metadata as retrieved from overpass in init_with_relation_id() and checks it for suitable admin_level and size.
 	let rel = data.elements[0]
-	download_flag = $("#save_osmdata").prop("checked")
 	if (!rel)
-		msg("no relation found with that ID", is_error=true)
+		msg("no relation found with that ID", true)
 	else if (!("admin_level" in rel.tags || rel.tags.boundary == "local_authority"))
-		msg("this does not appear to be an administrative boundary relation", is_error=true)
+		msg("this does not appear to be an administrative boundary relation", true)
 	else if (parseInt(rel.tags.admin_level) < 6)
-		msg("This area is probably too big: admin_level=" + rel.tags.admin_level, is_error=true)
+		msg("This area is probably too big: admin_level=" + rel.tags.admin_level, true)
 	else {
 		let bounds = rel.bounds
 		msg(data.elements[0].tags["name"])
 		if (area(bounds) > MAX_AREA_SIZE)
 			msg("area is too big")
 		else
-			msg("getting OSM data")
+			msg("getting OSM data from relation " + relation_id)
 			$.ajax("/get_rel/" + relation_id + "?server=" + overpass_endpoint, {
 				success: process_download,
-				error: function(jqXHR, textStatus, errorThrown) { msg("data retrieval failed", is_error=true) }
+				error: function(jqXHR, textStatus, errorThrown) { msg("data retrieval failed", true) }
 			})
 	}
 }
 
-function get_relation_meta() {
+function init_with_relation_id() {
+	// This function gets called when the user input a relation ID for an area to analyze
+	// The function retrieves the relation metadata and passes it on to retrieve_relation_data for processing.
 	relation_id = parseInt($("#relation_id").val())
 	if (isNaN(relation_id) || relation_id < 1)
-		msg("Please enter a valid relation ID", is_error=true)
+		msg("Please enter a valid relation ID", true)
+	$.ajax(overpass_endpoint, {
+		beforeSend: msg("loading"),
+		method: "POST",
+		data: tag_with_osmid`[out:json];relation(${ relation_id });out bb meta;`,
+		success: retrieve_relation_data,
+		error: function() { msg("metadata retrieval failed", true) }
+	})
+}
+
+function init_with_bbox() {
+	// when user defined area of interest using the map to draw a bounding box,
+	// we retrieve the data from here and send it on to process_download
+	msg("getting OSM data from bounding box")
+	$.ajax("/get_box/?n=" + north + "&s=" + south + "&e=" + east + "&w=" + west + "&server=" + overpass_endpoint, {
+		success: process_download,
+		error: function(jqXHR, textStatus, errorThrown) { msg("data retrieval failed", true) }
+	})
+
+}
+
+function on_submit() {
+	download_flag = $("#save_osmdata").prop("checked")
 	$("#submit").prop('disabled', true)
 	$("#relation_id").prop('disabled', true)
 	$("#save_osmdata").prop('disabled', true)
 	$("#use_altserver").prop('disabled', true)
 	overpass_endpoint = $("#use_altserver").prop('checked') ?  OVERPASS_ALT_API_URL : OVERPASS_API_URL
 	msg("using Overpass server at " + overpass_endpoint)
-	$.ajax(overpass_endpoint, {
-		beforeSend: msg("loading"),
-		method: "POST",
-		data: tag_with_osmid`[out:json];relation(${ relation_id });out bb meta;`,
-		success: process_relation_meta,
-		error: function() { msg("metadata retrieval failed", is_error=true) }
-	})
-}
-
-function parse_bbox() {
-	// when user defined area of interest using the map to draw a bounding box,
-	// we retrieve the data from here and send it on to process_download
-	msg("getting OSM data")
-	$.ajax("/get_box/?n=" + n + "&s=" + s + "&e=" + e + "&w=" + w + "&server=" + overpass_endpoint, {
-		success: process_download,
-		error: function(jqXHR, textStatus, errorThrown) { msg("data retrieval failed", is_error=true) }
-	})
-
-}
-
-function submit() {
 	if (parseInt($("#relation_id").val())) {
-		get_relation_meta()
-	} else if (n && s && e && w) {
-		parse_bbox()
+		init_with_relation_id()
+	} else if (north && south && east && west) {
+		init_with_bbox()
 	} else {
-		msg("Please supply an OSM relation ID or draw a box on the map.", is_error=true)
+		msg("Please supply an OSM relation ID or draw a box on the map.", true)
 	}
 }

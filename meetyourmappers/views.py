@@ -13,10 +13,13 @@ overpass_api_url = 'https://overpass-api.de/api/interpreter'
 overpass_rel_query = '(node(area:{});<;);(._;>;);out meta;'
 overpass_box_query = '(node({s}, {w}, {n}, {e});<;);(._;>;);out meta;'
 # filesystem path to store XML files that folks want to download
-data_dir = '/var/www/data'
+# data_dir = '/var/www/data'
+data_dir = 'data'
 # web server alias to the above file system path
 data_alias = '/download'
-log_file = '/var/log/meetyourmappers/requests.log'
+# log file location
+# log_file = '/var/log/meetyourmappers/requests.log'
+log_file = 'log/requests.log'
 
 logging.basicConfig(
     filename=log_file,
@@ -60,7 +63,7 @@ def get_area(relation_id):
         'size': len(resp.content)})
 
 
-@app.route('/get_box', methods=['get'])
+@app.route('/get_box/', methods=['get'])
 def get_box():
     overpass_endpoint = request.args.get('server')
     n = request.args.get('n')
