@@ -8,27 +8,19 @@ var totals
 var t = $("#results")
 var download_flag = false
 var overpass_endpoint
-var north, south, east, west
 var mymap
+var bounds
 var editableLayers
 
-function checkBbox(layer) {
-   var bounds = layer.getBounds()
-   north = bounds.getNorth(),
-   south = bounds.getSouth(),
-   east = bounds.getEast(),
-   west = bounds.getWest()
-   return (Math.abs(north - south) < 1 && Math.abs(east - west) < 1) 
-}
-
 function onDraw(e) {
+	// Called when a new bounding box was drawn.
+	// Stores the extents in the global north, south, east, west vars and
+	// checks the bounding box for valid size.
     editableLayers.clearLayers()
-    var layer = e.layer
-    var drawResultElem = document.getElementById('drawresult')
-    var isValid = checkBbox(layer)
-    if (isValid) {
-        msg('Bounding Box (' + south + ',' + west + ',' + north + ',' + east + ') OK')
-	    editableLayers.addLayer(layer)
+	bounds = e.layer.getBounds()
+	if(Math.abs(bounds.getNorth() - bounds.getSouth()) * Math.abs(bounds.getEast() - bounds.getWest()) < MAX_AREA_SIZE) {
+        msg('Bounding Box ( ' + bounds.toBBoxString() + ') OK')
+	    editableLayers.addLayer(e.layer)
     } else {
         msg('Bounding Box too big', true, true)
     }
@@ -135,6 +127,7 @@ function calculate_magic(user, first, last) {
 }
 
 function make_table(data) {
+	// takes the data object and fills out the datatable
 	for (user in data) {
 		let u = data[user]
 		let f = new Date(u.f)
@@ -162,6 +155,7 @@ function make_table(data) {
 }
 
 function display_result(data) {
+	// does the final calculations and renders the table and other elements 
 	totals = data.totals
 	totals["days"] = Math.ceil((new Date(totals.l) - new Date(totals.f)) / (1000 * 60 * 60 * 24)) // in days
 	make_table(data.users)
@@ -177,6 +171,7 @@ function display_result(data) {
 }
 
 function process_download(data) {
+	// sends the downloaded data to the osmium backend
 	if (data)
 		msg(to_mb(data.size) + ' MB downloaded, processing...')
 	else
@@ -229,7 +224,11 @@ function init_with_bbox() {
 	// when user defined area of interest using the map to draw a bounding box,
 	// we retrieve the data from here and send it on to process_download
 	msg("getting OSM data from bounding box")
-	$.ajax("/get_box/?n=" + north + "&s=" + south + "&e=" + east + "&w=" + west + "&server=" + overpass_endpoint, {
+	$.ajax("/get_box/?n=" + bounds.getNorth() +
+		"&s=" + bounds.getSouth() +
+		"&e=" + bounds.getEast() + 
+		"&w=" + bounds.getWest() +
+		"&server=" + overpass_endpoint, {
 		success: process_download,
 		error: function(jqXHR, textStatus, errorThrown) { msg("data retrieval failed", true) }
 	})
@@ -237,6 +236,7 @@ function init_with_bbox() {
 }
 
 function on_submit() {
+	// initial checks and UI actions after the user submits the form
 	download_flag = $("#save_osmdata").prop("checked")
 	$("#submit").prop('disabled', true)
 	$("#relation_id").prop('disabled', true)
@@ -246,7 +246,7 @@ function on_submit() {
 	msg("using Overpass server at " + overpass_endpoint)
 	if (parseInt($("#relation_id").val())) {
 		init_with_relation_id()
-	} else if (north && south && east && west) {
+	} else if (bounds) {
 		init_with_bbox()
 	} else {
 		msg("Please supply an OSM relation ID or draw a box on the map.", true)
