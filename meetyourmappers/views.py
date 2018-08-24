@@ -8,22 +8,10 @@ from meetyourmappers import osm
 import logging
 
 OVERPASS_AREA_BASE = 3600000000
-<<<<<<< HEAD
-
-overpass_api_url = 'https://overpass-api.de/api/interpreter'
-overpass_rel_query = '(node(area:{});<;);(._;>;);out meta;'
-overpass_box_query = '(node({s}, {w}, {n}, {e});<;);(._;>;);out meta;'
-# filesystem path to store XML files that folks want to download
-# data_dir = '/var/www/data'
-data_dir = 'data'
-# web server alias to the above file system path
-data_alias = '/download'
-# log file location
-# log_file = '/var/log/meetyourmappers/requests.log'
-log_file = 'log/requests.log'
-=======
 OSM_FILE_PATH_KEY = 'osm_file_path'
->>>>>>> master
+
+OVERPASS_REL_QUERY = '(node(area:{});<;);(._;>;);out meta;'
+OVERPASS_BOX_QUERY = '(node({s}, {w}, {n}, {e});<;);(._;>;);out meta;'
 
 logging.basicConfig(
     filename=app.config['LOG_FILE'],
@@ -53,22 +41,13 @@ def about():
 
 @app.route('/get_rel/<relation_id>', methods=['get'])
 def get_area(relation_id):
-<<<<<<< HEAD
-    overpass_endpoint = request.args.get('server')
-    session['osm_file_path'] = os.path.join(
-        tempfile.gettempdir(),
-        session['uid'] + '.xml')
-    q = overpass_rel_query.format(int(relation_id) + OVERPASS_AREA_BASE)
-    resp = requests.post(
-        overpass_endpoint,
-=======
     session[OSM_FILE_PATH_KEY] = os.path.join(
         tempfile.gettempdir(),
         session['uid'] + '.xml')
-    q = app.config['OVERPASS_MAP_QUERY'].format(int(relation_id) + OVERPASS_AREA_BASE)
+    q = app.config['OVERPASS_MAP_QUERY'].format(
+        int(relation_id) + OVERPASS_AREA_BASE)
     resp = requests.post(
         app.config['OVERPASS_API_URL'],
->>>>>>> master
         data=q)
     with open(session[OSM_FILE_PATH_KEY], 'wb') as fh:
         for block in resp.iter_content(1024):
@@ -89,7 +68,7 @@ def get_box():
     session['osm_file_path'] = os.path.join(
         tempfile.gettempdir(),
         session['uid'] + '.xml')
-    q = overpass_box_query.format(n=n, s=s, e=e, w=w)
+    q = OVERPASS_BOX_QUERY.format(n=n, s=s, e=e, w=w)
     resp = requests.post(
         overpass_endpoint,
         data=q)
@@ -111,10 +90,13 @@ def process_result():
     h.apply_file(session[OSM_FILE_PATH_KEY])
     if save_for_download:
         download_filename = str(uuid4()) + '.osm.xml'
-        saved_file_path = os.path.join(app.config['DATA_DIR'], download_filename)
+        saved_file_path = os.path.join(
+            app.config['DATA_DIR'],
+            download_filename)
         os.rename(session[OSM_FILE_PATH_KEY], saved_file_path)
     elif not app.debug:
-        logging.info("Removing temp file: {}".format(session[OSM_FILE_PATH_KEY]))
+        logging.info("Removing temp file: {}".format(
+            session[OSM_FILE_PATH_KEY]))
         os.remove(session[OSM_FILE_PATH_KEY])
     return jsonify({
         'totals': h.totals,

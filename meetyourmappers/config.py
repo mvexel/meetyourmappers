@@ -1,11 +1,20 @@
+# Main Overpass API URL
 OVERPASS_API_URL = 'https://overpass-api.de/api/interpreter'
+
+# Overpass query templates
 OVERPASS_MAP_QUERY = '(node(area:{});<;);(._;>;);out meta;'
-# filesystem path to store XML files that folks want to download
+OVERPASS_BOX_QUERY = '(node({s}, {w}, {n}, {e});<;);(._;>;);out meta;'
+
+# Filesystem path to store XML files that folks want to download
 DATA_DIR = '/var/www/data'
-# web server alias to the above file system path
+
+# Web server alias to the above file system path
 DATA_ALIAS = '/download'
 LOG_FILE = '/var/log/meetyourmappers/requests.log'
 TEST_DATA = 'testdata/Buncombe.xml'
 
+# Secret key, change me
 SECRET_KEY = 'owfoiwnef aiefliuaehlifamewlfihaeilw '
+
+# debug mode
 DEBUG = False
