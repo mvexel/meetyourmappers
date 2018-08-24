@@ -5,3 +5,5 @@ testdata/
 meetyourmappers.egg-info
 data/
 log/
+config_local.py
+*.log
