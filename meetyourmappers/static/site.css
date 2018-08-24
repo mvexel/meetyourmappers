@@ -7,10 +7,18 @@ input, button {
 }
 
 #messages {
-	font-size: smaller;
-	color: #999;
+	position: fixed;
+	top: 10px;
+	right: 10px;
+	width: 30%;
+	border: 1px solid #aaa;
+	padding: 5px;
+	background-color: #ddd;
+	font-size: 10px;
 	padding-top: 10px;
 	padding-bottom: 10px;
+	opacity: 0.6;
+	z-index: 1000;
 }
 
 #results {
@@ -43,6 +51,13 @@ input, button {
 	padding: 20px;
 	width: 175px;
 	font-size: 9pt;
+}
+
+#mapid {
+	position: relative;
+	margin-top: 10px;
+	height: 400px;
+	width: 600px;
 }
 
 .userinput {

@@ -8,7 +8,22 @@ from meetyourmappers import osm
 import logging
 
 OVERPASS_AREA_BASE = 3600000000
+<<<<<<< HEAD
+
+overpass_api_url = 'https://overpass-api.de/api/interpreter'
+overpass_rel_query = '(node(area:{});<;);(._;>;);out meta;'
+overpass_box_query = '(node({s}, {w}, {n}, {e});<;);(._;>;);out meta;'
+# filesystem path to store XML files that folks want to download
+# data_dir = '/var/www/data'
+data_dir = 'data'
+# web server alias to the above file system path
+data_alias = '/download'
+# log file location
+# log_file = '/var/log/meetyourmappers/requests.log'
+log_file = 'log/requests.log'
+=======
 OSM_FILE_PATH_KEY = 'osm_file_path'
+>>>>>>> master
 
 logging.basicConfig(
     filename=app.config['LOG_FILE'],
@@ -36,14 +51,24 @@ def about():
     return render_template('about.html', debug=app.debug)
 
 
-@app.route('/retrieve/<relation_id>', methods=['get'])
+@app.route('/get_rel/<relation_id>', methods=['get'])
 def get_area(relation_id):
+<<<<<<< HEAD
+    overpass_endpoint = request.args.get('server')
+    session['osm_file_path'] = os.path.join(
+        tempfile.gettempdir(),
+        session['uid'] + '.xml')
+    q = overpass_rel_query.format(int(relation_id) + OVERPASS_AREA_BASE)
+    resp = requests.post(
+        overpass_endpoint,
+=======
     session[OSM_FILE_PATH_KEY] = os.path.join(
         tempfile.gettempdir(),
         session['uid'] + '.xml')
     q = app.config['OVERPASS_MAP_QUERY'].format(int(relation_id) + OVERPASS_AREA_BASE)
     resp = requests.post(
         app.config['OVERPASS_API_URL'],
+>>>>>>> master
         data=q)
     with open(session[OSM_FILE_PATH_KEY], 'wb') as fh:
         for block in resp.iter_content(1024):
@@ -51,6 +76,29 @@ def get_area(relation_id):
     logging.info("\t".join([relation_id, str(len(resp.content))]))
     return jsonify({
         'file': session[OSM_FILE_PATH_KEY],
+        'size': len(resp.content)})
+
+
+@app.route('/get_box/', methods=['get'])
+def get_box():
+    overpass_endpoint = request.args.get('server')
+    n = request.args.get('n')
+    s = request.args.get('s')
+    e = request.args.get('e')
+    w = request.args.get('w')
+    session['osm_file_path'] = os.path.join(
+        tempfile.gettempdir(),
+        session['uid'] + '.xml')
+    q = overpass_box_query.format(n=n, s=s, e=e, w=w)
+    resp = requests.post(
+        overpass_endpoint,
+        data=q)
+    with open(session['osm_file_path'], 'wb') as fh:
+        for block in resp.iter_content(1024):
+            fh.write(block)
+    logging.info("\t".join([n, s, e, w, str(len(resp.content))]))
+    return jsonify({
+        'file': session['osm_file_path'],
         'size': len(resp.content)})
 
 
