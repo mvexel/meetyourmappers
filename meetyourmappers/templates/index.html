@@ -4,10 +4,9 @@
 		<div class="userinput">
 			Draw a box on the map below for the area you want to analyze.
 			<div id="mapid"></div>
-			<div id="drawresult"></div>
 		</div>
 		<div class="explain">
-			Use the ⏹ button to activate drawing mode. Then use click and drag to draw the box. The area cannot be too large, because the data is loaded on demand from the Overpass API.
+			Use the ⏹ button to activate drawing mode. Then use click and drag to draw the box. The area cannot be too large, because the data is loaded on demand from the Overpass API. <a href="#" onClick="centerMapOnMyLocation()">Center map on my approximate location</a>
 		</div>
 		<div class="userinput">
 			Or, enter an OSM relation ID for your area of interest: <input type="text" placeholder="OSM relation ID" id="relation_id">

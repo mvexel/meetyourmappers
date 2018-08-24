@@ -11,6 +11,7 @@ var overpass_endpoint
 var mymap
 var bounds
 var editableLayers
+var user_lon, user_lat
 
 function onDraw(e) {
 	// Called when a new bounding box was drawn.
@@ -19,7 +20,7 @@ function onDraw(e) {
     editableLayers.clearLayers()
 	bounds = e.layer.getBounds()
 	if(Math.abs(bounds.getNorth() - bounds.getSouth()) * Math.abs(bounds.getEast() - bounds.getWest()) < MAX_AREA_SIZE) {
-        msg('Bounding Box ( ' + bounds.toBBoxString() + ') OK')
+        msg('Bounding Box OK')
 	    editableLayers.addLayer(e.layer)
     } else {
         msg('Bounding Box too big', true, true)
@@ -79,10 +80,10 @@ function init() {
 		// create the tile layer with correct attribution
 		var osmUrl='https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
 		var osmAttrib='Map data © <a href="https://openstreetmap.org">OpenStreetMap</a> contributors';
-		var osm = new L.TileLayer(osmUrl, {minZoom: 4, maxZoom: 16, attribution: osmAttrib});        
+		var osm = new L.TileLayer(osmUrl, {minZoom: 4, maxZoom: 18, attribution: osmAttrib});        
 
 		// start the map in South-East England
-		mymap.setView(new L.LatLng(51.3, 0.7),9);
+		mymap.setView(new L.LatLng(51.3, 0.7),11);
 		mymap.addLayer(osm);
 
 		// add editable layers
@@ -252,3 +253,17 @@ function on_submit() {
 		msg("Please supply an OSM relation ID or draw a box on the map.", true)
 	}
 }
+
+function centerMapOnMyLocation() {
+	$.getJSON('https://geoip-db.com/json/')
+	.done (function(location) {
+		user_lon = location.longitude
+		user_lat = location.latitude
+		mymap.setView([user_lat, user_lon])
+     });
+}
+
+$(document).ready(function() { 
+	// on load, get the user's approximate location and center the map there.
+	centerMapOnMyLocation()
+});
