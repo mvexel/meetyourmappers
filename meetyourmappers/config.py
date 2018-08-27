@@ -10,11 +10,11 @@ DATA_DIR = '/var/www/data'
 
 # Web server alias to the above file system path
 DATA_ALIAS = '/download'
-LOG_FILE = '/var/log/meetyourmappers/requests.log'
+LOG_FILE = '/home/meetyourmappers/meetyourmappers/requests.log'
 TEST_DATA = 'testdata/Buncombe.xml'
 
 # Secret key, change me
-SECRET_KEY = 'owfoiwnef aiefliuaehlifamewlfihaeilw '
+SECRET_KEY = 'OVERRIDE ME WITH AN ENVVAR'
 
 # debug mode
-DEBUG = False
+DEBUG = True

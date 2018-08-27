@@ -7,3 +7,5 @@ data/
 log/
 config_local.py
 *.log
+dist/
+build/
