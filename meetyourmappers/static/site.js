@@ -135,7 +135,7 @@ function make_table(data) {
 		let l = new Date(u.l)
 		// console.log(user)
 		let m =	calculate_magic(u, f, l)
-		let h = '<a href="https://osm.org/user/' + user + '" target="_blank">' + user + '</a>'
+		let h = '<a href="https://osm.org/user/' + user + '" target="_blank">' + user + '</a><sup><a href="http://hdyc.neis-one.org/?' + user + '">hdyc</a></sup>'
 		// fixme ugly
 		let row = '<tr><td>' + 
 			h + 
