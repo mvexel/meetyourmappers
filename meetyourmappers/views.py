@@ -6,6 +6,7 @@ import tempfile
 import os
 from meetyourmappers import osm
 import logging
+import shutil
 
 OVERPASS_AREA_BASE = 3600000000
 OSM_FILE_PATH_KEY = 'osm_file_path'
@@ -93,7 +94,7 @@ def process_result():
         saved_file_path = os.path.join(
             app.config['DATA_DIR'],
             download_filename)
-        os.rename(session[OSM_FILE_PATH_KEY], saved_file_path)
+        shutil.move(session[OSM_FILE_PATH_KEY], saved_file_path)
     elif not app.debug:
         logging.info("Removing temp file: {}".format(
             session[OSM_FILE_PATH_KEY]))
