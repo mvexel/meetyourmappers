@@ -185,17 +185,19 @@ function process_download(data) {
 
 function retrieve_relation_data(data) {
 	// This function receives the relation metadata as retrieved from overpass in init_with_relation_id() and checks it for suitable admin_level and size.
+	var qs = window.location.search.substring(1);
+	console.log("query string: " + qs);
 	let rel = data.elements[0]
 	if (!rel)
 		msg("no relation found with that ID", true)
 	else if (!("admin_level" in rel.tags || rel.tags.boundary == "local_authority"))
 		msg("this does not appear to be an administrative boundary relation", true)
-	else if (parseInt(rel.tags.admin_level) < 6)
+	else if (qs != "force" && parseInt(rel.tags.admin_level) < 6)
 		msg("This area is probably too big: admin_level=" + rel.tags.admin_level, true)
 	else {
 		let bounds = rel.bounds
 		msg(data.elements[0].tags["name"])
-		if (area(bounds) > MAX_AREA_SIZE)
+		if (qs != "force" && area(bounds) > MAX_AREA_SIZE)
 			msg("area is too big")
 		else
 			msg("getting OSM data from relation " + relation_id)
