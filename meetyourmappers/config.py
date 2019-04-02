@@ -17,4 +17,4 @@ TEST_DATA = 'testdata/Buncombe.xml'
 SECRET_KEY = 'OVERRIDE ME WITH AN ENVVAR'
 
 # debug mode
-DEBUG = True
+DEBUG = False
