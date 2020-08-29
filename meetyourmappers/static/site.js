@@ -190,7 +190,7 @@ function retrieve_relation_data(data) {
 	let rel = data.elements[0]
 	if (!rel)
 		msg("no relation found with that ID", true)
-	else if (!("admin_level" in rel.tags || rel.tags.boundary == "local_authority"))
+	else if (!("admin_level" in rel.tags || rel.tags.boundary == "local_authority" || rel.tags.boundary == "aboriginal_lands"))
 		msg("this does not appear to be an administrative boundary relation", true)
 	else if (qs != "force" && parseInt(rel.tags.admin_level) < 6)
 		msg("This area is probably too big: admin_level=" + rel.tags.admin_level, true)
