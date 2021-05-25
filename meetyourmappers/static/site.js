@@ -7,7 +7,7 @@ var message_queue = []
 var totals
 var t = $("#results")
 var download_flag = false
-var overpass_endpoint
+var use_alt_overpass_server = false
 var mymap
 var bounds
 var editableLayers
@@ -201,7 +201,7 @@ function retrieve_relation_data(data) {
 			msg("area is too big")
 		else
 			msg("getting OSM data from relation " + relation_id)
-			$.ajax("/get_rel/" + relation_id + "?server=" + overpass_endpoint, {
+			$.ajax("/get_rel/" + relation_id + "?altserver=" + use_alt_overpass_server ? '1' : '0', {
 				success: process_download,
 				error: function(jqXHR, textStatus, errorThrown) { msg("data retrieval failed", true) }
 			})
@@ -214,7 +214,7 @@ function init_with_relation_id() {
 	relation_id = parseInt($("#relation_id").val())
 	if (isNaN(relation_id) || relation_id < 1)
 		msg("Please enter a valid relation ID", true)
-	$.ajax(overpass_endpoint, {
+	$.ajax(use_alt_overpass_server ? OVERPASS_ALT_API_URL : OVERPASS_API_URL, {
 		beforeSend: msg("loading"),
 		method: "POST",
 		data: tag_with_osmid`[out:json];relation(${ relation_id });out bb meta;`,
@@ -231,7 +231,7 @@ function init_with_bbox() {
 		"&s=" + bounds.getSouth() +
 		"&e=" + bounds.getEast() + 
 		"&w=" + bounds.getWest() +
-		"&server=" + overpass_endpoint, {
+		"&altserver=" + (use_alt_overpass_server ? "1" : "0"), {
 		success: process_download,
 		error: function(jqXHR, textStatus, errorThrown) { msg("data retrieval failed", true) }
 	})
@@ -245,8 +245,8 @@ function on_submit() {
 	$("#relation_id").prop('disabled', true)
 	$("#save_osmdata").prop('disabled', true)
 	$("#use_altserver").prop('disabled', true)
-	overpass_endpoint = $("#use_altserver").prop('checked') ?  OVERPASS_ALT_API_URL : OVERPASS_API_URL
-	msg("using Overpass server at " + overpass_endpoint)
+	use_alt_overpass_server = $("#use_altserver").prop('checked')
+	msg("using alternate Overpass server")
 	if (parseInt($("#relation_id").val())) {
 		init_with_relation_id()
 	} else if (bounds) {
