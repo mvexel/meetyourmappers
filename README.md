@@ -6,6 +6,8 @@ MYM does that, and only that, for you. It will not give you detailed breakdowns 
 
 ## Usage
 
+### I no longer host this web site myself, but please feel free to set it up yourself! See 'Production' below for instructions.
+
 This is a bit of a hack so you need to do a few steps. Please help make this tool easier to use by contributing improvements if you can!
 
 **The OSM data needed to get you your answers is retrieved from Overpass. Please be mindful of this and don't try to request answers for huge areas.**
