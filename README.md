@@ -1,5 +1,7 @@
 # Meet Your Mappers
 
+## ARCHIVED. A new version of this application exists [here](https://github.com/mvexel/osm-meet-your-mappers)
+
 Meet Your Mappers (MYM) is a simple tool to retrieve a list of active mappers around you. This can come in handy when you want to invite people to a mapping party or another local OSM event you are organizing. Or perhaps you have just always wondered who else is mapping a lot in your area.
 
 MYM does that, and only that, for you. It will not give you detailed breakdowns of what everyone mapped and where, there are great tools out there for that already, like Simon Legner's Whodidit, Wille Marcel's OSMCha and Pascal Neis's Who's Around Me.
